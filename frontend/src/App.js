@@ -1,13 +1,13 @@
 import "./App.css";
 import { BrowserRouter, HashRouter, Routes, Route } from "react-router-dom";
+import Home from './pages/Home';
 function App() {
   return (
-    // <HashRouter>
-    //   <Routes>
-    //     <Route path="/" element={<Login />} />
-    //   </Routes>
-    // </HashRouter>
-    <h1>hello world how are you doing hope you are good</h1>
+    <HashRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
+    </HashRouter>
   );
 }
 

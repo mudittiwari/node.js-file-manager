@@ -3,3 +3,8 @@ a. user can give multiple names
 b. user can give multiple extensions
 c. user can select the range of dates
 d. user can select the range of size in mb
+
+
+frontend of the utilities has been created. 
+now attach the first three utilities with the frontend and then work on the advanced search utility. 
+apply various validations that should be included in the application. think of the validations first and then add them.

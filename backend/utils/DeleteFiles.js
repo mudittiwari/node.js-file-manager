@@ -32,7 +32,7 @@ const deleteFiles = () => {
  * @param {Number} days
  * @param {Number} size
  */
-function deleteFilesLoop(filesMap, extensionsArray, days, size) {
+function deleteFilesLoop(filesMap, days, size) {
     filesMap.forEach(function (arr, key) {
 
         arr.forEach(function (location) {
