@@ -1,0 +1,5 @@
+1. create a file search utility with the following features
+a. user can give multiple names
+b. user can give multiple extensions
+c. user can select the range of dates
+d. user can select the range of size in mb
