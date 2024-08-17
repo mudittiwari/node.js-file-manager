@@ -1,15 +1,13 @@
-
-import './App.css';
-import { BrowserRouter,HashRouter ,Routes, Route } from 'react-router-dom';
+import "./App.css";
+import { BrowserRouter, HashRouter, Routes, Route } from "react-router-dom";
 function App() {
-
   return (
     // <HashRouter>
     //   <Routes>
     //     <Route path="/" element={<Login />} />
     //   </Routes>
     // </HashRouter>
-    <h1>hello world how are you doing</h1>
+    <h1>hello world how are you doing hope you are good</h1>
   );
 }
 
