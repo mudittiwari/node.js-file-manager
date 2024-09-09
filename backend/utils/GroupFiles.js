@@ -1,20 +1,10 @@
-const readline = require("readline");
 const fs = require("fs");
 const path = require('path');
 
 
-const groupFiles = () => {
-
-    const rl = initializeReadLine();
-    let filesMap = undefined;
-    const readLine = rl();
-    readLine.question("please provide the directory", function (directory) {
-        readLine.question("Do you want recursive", function (recursiveFlag) {
-            filesMap = getAllFiles(directory, new Map(), recursiveFlag);
-            processFilesMap(filesMap, directory);
-            readLine.close();
-        })
-    })
+const groupFiles = (directory,recursiveFlag,extensionsArray) => {
+    const filesMap = getAllFiles(directory, new Map(), recursiveFlag, extensionsArray);
+    processFilesMap(filesMap, directory);
 }
 
 /**
@@ -58,16 +48,17 @@ function processFilesMap(filesMap, directory) {
  * @param {string[]} extensionsArray
  * @returns {Map<string, string[]>}
  */
-function getAllFiles(dirPath, filesMap, recursiveFlag, extensionsArray = ["pdf"]) {
+function getAllFiles(dirPath, filesMap, recursiveFlag, extensionsArray) {
 
     const files = fs.readdirSync(dirPath);
-
     files.forEach(file => {
         const fullPath = path.join(dirPath, file);
         const extension = path.extname(fullPath).slice(1);
         if (fs.statSync(fullPath).isDirectory()) {
-            if (recursiveFlag === 'Y') {
-                getAllFiles(fullPath, filesMap, recursiveFlag);
+            if (path.basename(fullPath) !== "mergedfiles") {
+                if (recursiveFlag) {
+                    getAllFiles(fullPath, filesMap, recursiveFlag, extensionsArray);
+                }
             }
         } else {
             if (extensionsArray.includes(extension)) {
@@ -83,28 +74,6 @@ function getAllFiles(dirPath, filesMap, recursiveFlag, extensionsArray = ["pdf"]
 
     return filesMap;
 }
-
-
-
-function initializeReadLine() {
-
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-
-
-    rl.on("close", function () {
-        console.log("\nBYE BYE !!!");
-        process.exit(0);
-    });
-
-    function getReadLine() {
-        return rl;
-    }
-    return getReadLine;
-}
-
 
 module.exports = {
     groupFiles

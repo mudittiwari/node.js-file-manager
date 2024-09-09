@@ -4,27 +4,11 @@ const path = require('path');
 
 
 
-const deleteFiles = () => {
-    const rl = initializeReadLine();
-    const readLine = rl();
-    let filesMap = undefined;
-    readLine.question("Enter the directory", function (directory) {
-        //we will fetch the extensions which are present in the folder and then we will give the user a list to select from that
-        let extensionsArray = ["pdf", "png"];
-        readLine.question("Do you want recursive flag", function (flag) {
-            readLine.question("what is the time limit", function (days) {
-                readLine.question("what is the minimum size of the file in mb", function (size) {
-                    let daysNumber = Number(days);
-                    let sizeNumber = Number(size)
-                    filesMap = getAllFiles(directory, new Map(), flag);
-                    deleteFilesLoop(filesMap, extensionsArray, daysNumber, sizeNumber);
-                    readLine.close();
-                });
-
-            })
-
-        });
-    });
+const deleteFiles = (directory, recursiveFlag, extensionsArray, days, size) => {
+    let daysNumber = Number(days);
+    let sizeNumber = Number(size)
+    const filesMap = getAllFiles(directory, new Map(), recursiveFlag, extensionsArray);
+    deleteFilesLoop(filesMap, daysNumber, sizeNumber);
 }
 
 /**
@@ -38,7 +22,7 @@ function deleteFilesLoop(filesMap, days, size) {
         arr.forEach(function (location) {
             changeATime(location, fs.statSync(location))
             const stats = fs.statSync(location);
-            const fileSize = stats["size"] / (1024 * 1024)
+            const fileSize = stats["size"] / (1024)
             if (filterOlderDate(days, stats["atime"]) && fileSize > size) {
                 try {
                     fs.unlinkSync(location);
@@ -54,7 +38,7 @@ function deleteFilesLoop(filesMap, days, size) {
 
 //this funtion is used to do the testing of delete files utility.
 function changeATime(directory, stats) {
-    const newATime = new Date(Date.now() - 4 * 24 * 60 * 60 * 1000);
+    const newATime = new Date(Date.now() - 1000 * 24 * 60 * 60 * 1000);
     const mTime = stats["mtime"];
     fs.utimesSync(directory, newATime, mTime);
 }
@@ -67,7 +51,7 @@ function changeATime(directory, stats) {
  * @param {string[]} extensionsArray
  * @returns {Map<string, string[]>}
  */
-function getAllFiles(dirPath, filesMap, recursiveFlag, extensionsArray = ["pdf"]) {
+function getAllFiles(dirPath, filesMap, recursiveFlag, extensionsArray) {
 
     const files = fs.readdirSync(dirPath);
 
@@ -76,11 +60,13 @@ function getAllFiles(dirPath, filesMap, recursiveFlag, extensionsArray = ["pdf"]
         const extension = path.extname(fullPath).slice(1);
 
         if (fs.statSync(fullPath).isDirectory()) {
-            if (recursiveFlag === 'Y') {
-                getAllFiles(fullPath, filesMap, recursiveFlag);
+            if (path.basename(fullPath) !== "mergedfiles") {
+                if (recursiveFlag) {
+                    getAllFiles(fullPath, filesMap, recursiveFlag, extensionsArray);
+                }
             }
         } else {
-            if (extensionsArray.includes(key)) {
+            if (extensionsArray.includes(extension)) {
                 if (filesMap.has(extension)) {
                     filesMap.set(extension, [...filesMap.get(extension), fullPath]);
                 } else {
@@ -92,28 +78,6 @@ function getAllFiles(dirPath, filesMap, recursiveFlag, extensionsArray = ["pdf"]
 
     return filesMap;
 }
-
-
-
-function initializeReadLine() {
-
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-
-
-    rl.on("close", function () {
-        console.log("\nBYE BYE !!!");
-        process.exit(0);
-    });
-
-    function getReadLine() {
-        return rl;
-    }
-    return getReadLine;
-}
-
 
 function convertToIst(utcDate) {
     const istDate = utcDate.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' });

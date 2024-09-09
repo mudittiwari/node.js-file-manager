@@ -1,22 +1,14 @@
-const readline = require("readline");
 const fs = require("fs");
 const path = require('path');
 
 
 
-const groupFilesDate = () => {
-    const rl = initializeReadLine();
-    let filesMap = undefined;
-    const readLine = rl();
-    readLine.question("please provide the directory", function (directory) {
-        readLine.question("Do you want recursive", function (recursiveFlag) {
-            //use a prompt or some function that will be responsible for getting the extensions array
-            filesMap = getAllFiles(directory, new Map(), recursiveFlag);
-            processFilesMap(filesMap, "C:\\Users\\user\\Desktop\\projects");
-            readLine.close();
-        })
-    })
+const groupFilesDate = (directory, recursiveFlag, extensionsArray) => {
+    console.log(directory,recursiveFlag,extensionsArray);
+    const filesMap = getAllFiles(directory, new Map(), recursiveFlag, extensionsArray);
+    processFilesMap(filesMap, directory);
 }
+
 
 /**
  * @param {string} directory
@@ -60,7 +52,7 @@ function processFilesMap(filesMap, directory) {
  * @param {string[]} extensionsArray
  * @returns {Map<string, string[]>}
  */
-function getAllFiles(dirPath, filesMap, recursiveFlag, extensionsArray = ["pdf"]) {
+function getAllFiles(dirPath, filesMap, recursiveFlag, extensionsArray) {
     const files = fs.readdirSync(dirPath);
 
     files.forEach(file => {
@@ -68,8 +60,10 @@ function getAllFiles(dirPath, filesMap, recursiveFlag, extensionsArray = ["pdf"]
         const extension = path.extname(fullPath).slice(1);
         const stats = fs.statSync(fullPath);
         if (stats.isDirectory()) {
-            if (recursiveFlag === 'Y') {
-                getAllFiles(fullPath, filesMap, recursiveFlag);
+            if (path.basename(fullPath) !== "mergedfiles") {
+                if (recursiveFlag) {
+                    getAllFiles(fullPath, filesMap, recursiveFlag,extensionsArray);
+                }
             }
         } else {
             if (extensionsArray.includes(extension)) {
@@ -90,25 +84,6 @@ function getAllFiles(dirPath, filesMap, recursiveFlag, extensionsArray = ["pdf"]
 function convertToIst(utcDate) {
     const istDate = utcDate.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' });
     return istDate;
-}
-
-function initializeReadLine() {
-
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-
-
-    rl.on("close", function () {
-        console.log("\nBYE BYE !!!");
-        process.exit(0);
-    });
-
-    function getReadLine() {
-        return rl;
-    }
-    return getReadLine;
 }
 
 module.exports = {

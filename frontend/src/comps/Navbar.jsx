@@ -1,4 +1,5 @@
 import React from "react";
+import { NavbarState } from "../utils/Constants";
 
 function Navbar({ changeNavbarState }) {
   return (
@@ -8,7 +9,7 @@ function Navbar({ changeNavbarState }) {
         <li
           onClick={(e) => {
             e.preventDefault();
-            changeNavbarState("deleteFiles");
+            changeNavbarState(NavbarState.DELETE_FILES);
           }}
           className="text-white hover:text-gray-400 cursor-pointer"
         >
@@ -17,7 +18,7 @@ function Navbar({ changeNavbarState }) {
         <li
           onClick={(e) => {
             e.preventDefault();
-            changeNavbarState("groupFiles");
+            changeNavbarState(NavbarState.GROUP_FILES);
           }}
           className="text-white hover:text-gray-400 cursor-pointer"
         >
@@ -26,7 +27,7 @@ function Navbar({ changeNavbarState }) {
         <li
           onClick={(e) => {
             e.preventDefault();
-            changeNavbarState("groupFilesDates");
+            changeNavbarState(NavbarState.GROUP_FILES_DATES);
           }}
           className="text-white hover:text-gray-400 cursor-pointer"
         >
@@ -35,7 +36,7 @@ function Navbar({ changeNavbarState }) {
         <li
           onClick={(e) => {
             e.preventDefault();
-            changeNavbarState("advancedSearch");
+            changeNavbarState(NavbarState.ADVANCED_SEARCH);
           }}
           className="text-white hover:text-gray-400 cursor-pointer"
         >
@@ -44,7 +45,7 @@ function Navbar({ changeNavbarState }) {
         <li
           onClick={(e) => {
             e.preventDefault();
-            changeNavbarState("directoryStalker");
+            changeNavbarState(NavbarState.DIRECTORY_STALKER);
           }}
           className="text-white hover:text-gray-400 cursor-pointer"
         >

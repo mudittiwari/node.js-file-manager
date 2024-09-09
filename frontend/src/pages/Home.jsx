@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import Navbar from "../comps/Navbar";
+import { NavbarState } from "../utils/Constants";
+import { makeRequest, notifyError, notifySuccess } from "../utils/Utils";
+import { Toaster } from "react-hot-toast";
 
 const Home = () => {
   const [navbarState, setNavbarState] = useState("deleteFiles");
@@ -10,39 +13,69 @@ const Home = () => {
   const [selectedExtensions, setSelectedExtensions] = useState([]);
   const [fileNames, setFileNames] = useState("");
   const [dateRange, setDateRange] = useState({ startDate: "", endDate: "" });
-  const [sizeRange, setSizeRange] = useState({ minSize: "", maxSize: "" }); 
+  const [sizeRange, setSizeRange] = useState({ minSize: "", maxSize: "" });
 
   const extensions = [
-    ".pdf",
-    ".png",
-    ".jpg",
-    ".jpeg",
-    ".txt",
-    ".docx",
-    ".xlsx",
-    ".mp4",
-    ".mp3",
-    ".zip",
+    "pdf",
+    "png",
+    "jpg",
+    "jpeg",
+    "txt",
+    "docx",
+    "xlsx",
+    "mp4",
+    "mp3",
+    "zip",
   ];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle different tasks based on the navbarState
-    if (navbarState === "deleteFiles") {
-      // Call deleteFiles function here
-      console.log({
+
+    if (navbarState === NavbarState.GROUP_FILES) {
+      let response = await makeRequest("http://localhost:5000/groupFiles", {}, "POST", {
         directory,
         isRecursive,
-        timeLimit: Number(timeLimit),
-        minSize: Number(minSize),
         selectedExtensions,
-      });
-    } else if (navbarState === "searchFiles") {
-      // Call searchFiles function here
+      }, {});
+      if (response && response.status === 200) {
+        notifySuccess(response.data.message)
+      } else {
+        notifyError(response.response.data.error);
+      }
+    }
+
+
+    else if (navbarState === NavbarState.GROUP_FILES_DATES) {
+      let response = await makeRequest("http://localhost:5000/groupFilesDates", {}, "POST", {
+        directory,
+        isRecursive,
+        selectedExtensions,
+      }, {});
+      if (response && response.status === 200) {
+        notifySuccess(response.data.message)
+      } else {
+        notifyError(response.response.data.error);
+      }
+    }
+    else if (navbarState === NavbarState.DELETE_FILES) {
+      let response = await makeRequest("http://localhost:5000/deleteFiles", {}, "POST", {
+        directory,
+        isRecursive,
+        selectedExtensions,
+        timeLimit,
+        minSize
+      }, {});
+      if (response && response.status === 200) {
+        notifySuccess(response.data.message)
+      } else {
+        notifyError(response.response.data.error);
+      }
+    }
+    if (navbarState === NavbarState.ADVANCED_SEARCH) {
       console.log({
         directory,
         isRecursive,
-        fileNames: fileNames.split(",").map(name => name.trim()), // Handle multiple names
+        fileNames: fileNames.split(",").map(name => name.trim()),
         selectedExtensions,
         dateRange,
         sizeRange: {
@@ -50,6 +83,9 @@ const Home = () => {
           maxSize: Number(sizeRange.maxSize),
         },
       });
+    } else if (navbarState === NavbarState.DIRECTORY_STALKER) {
+
+
     }
   };
 
@@ -64,6 +100,7 @@ const Home = () => {
 
   return (
     <>
+    <Toaster />
       <Navbar changeNavbarState={setNavbarState} />
       <form
         onSubmit={handleSubmit}
