@@ -6,9 +6,11 @@ const path = require('path');
 
 const deleteFiles = (directory, recursiveFlag, extensionsArray, days, size) => {
     let daysNumber = Number(days);
-    let sizeNumber = Number(size)
+    let sizeNumber = Number(size);
+    console.log(daysNumber,sizeNumber);
     const filesMap = getAllFiles(directory, new Map(), recursiveFlag, extensionsArray);
-    deleteFilesLoop(filesMap, daysNumber, sizeNumber);
+    const resultMap=deleteFilesLoop(filesMap, daysNumber, sizeNumber);
+    return resultMap;
 }
 
 /**
@@ -17,23 +19,28 @@ const deleteFiles = (directory, recursiveFlag, extensionsArray, days, size) => {
  * @param {Number} size
  */
 function deleteFilesLoop(filesMap, days, size) {
+    const resultMap=new Map();
     filesMap.forEach(function (arr, key) {
 
-        arr.forEach(function (location) {
-            changeATime(location, fs.statSync(location))
-            const stats = fs.statSync(location);
-            const fileSize = stats["size"] / (1024)
+        arr.forEach(function ({fullPath,fileName,fileSize}) {
+            const stats = fs.statSync(fullPath);
             if (filterOlderDate(days, stats["atime"]) && fileSize > size) {
                 try {
-                    fs.unlinkSync(location);
-                    console.log(`${location} deleted successfully`);
+                    fs.unlinkSync(fullPath);
+                    console.log(`${fullPath} deleted successfully`);
+                    if (resultMap.has(key)) {
+                        resultMap.set(key, [...resultMap.get(key), {fullPath,fileName,fileSize}]);
+                    } else {
+                        resultMap.set(key, [{fullPath,fileName,fileSize}]);
+                    }
                 } catch (err) {
-                    console.error(`Error deleting ${location}: ${err.message}`);
+                    console.error(`Error deleting ${fullPath}: ${err.message}`);
                 }
             }
 
         });
     });
+    return resultMap;
 }
 
 //this funtion is used to do the testing of delete files utility.
@@ -66,11 +73,14 @@ function getAllFiles(dirPath, filesMap, recursiveFlag, extensionsArray) {
                 }
             }
         } else {
+            let fileName=path.basename(fullPath).split(".")[0];
+            const stats = fs.statSync(fullPath);
+            const fileSize = stats["size"] / (1024)
             if (extensionsArray.includes(extension)) {
                 if (filesMap.has(extension)) {
-                    filesMap.set(extension, [...filesMap.get(extension), fullPath]);
+                    filesMap.set(extension, [...filesMap.get(extension), {fullPath,fileName,fileSize}]);
                 } else {
-                    filesMap.set(extension, [fullPath]);
+                    filesMap.set(extension, [{fullPath,fileName,fileSize}]);
                 }
             }
         }

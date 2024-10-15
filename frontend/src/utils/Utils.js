@@ -26,7 +26,7 @@ async function makeRequest(url, headers = {}, method = 'GET', data = null, query
 const notifySuccess = (message) => {
     toast.success(message, {
         iconTheme: {
-            primary: '#67539f'
+            primary: '#1F2937'
         },
     });
 };
@@ -38,5 +38,16 @@ const notifyError = (message) => {
         },
     });
 };
+const compareArrays = (array1, array2) => {
+    const array2Sorted = array2.slice().sort();
+    return array1.length === array2.length && array1.slice().sort().every(function (value, index) {
+        return value === array2Sorted[index];
+    });
+}
+const removeItemFromArray = (array, itemToRemove) => {
+    const newArray = array
+        .filter(item => item !== itemToRemove);
+    return newArray;
+}
 
-export {makeRequest, notifySuccess, notifyError}
+export { makeRequest, notifySuccess, notifyError, compareArrays, removeItemFromArray }

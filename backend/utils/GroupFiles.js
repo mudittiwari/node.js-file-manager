@@ -4,14 +4,17 @@ const path = require('path');
 
 const groupFiles = (directory,recursiveFlag,extensionsArray) => {
     const filesMap = getAllFiles(directory, new Map(), recursiveFlag, extensionsArray);
-    processFilesMap(filesMap, directory);
+    const resultMap=processFilesMap(filesMap, directory);
+    return resultMap;
 }
 
 /**
  * @param {string} directory
  * @param {Map<string, string[]>} filesMap
+ * @returns {Map<string, string[]>} resultMap
  */
 function processFilesMap(filesMap, directory) {
+    const resultMap=new Map();
     const newDirectory = directory + "\\mergedfiles"
     if (fs.existsSync(newDirectory)) {
         fs.rmSync(newDirectory, { recursive: true, force: true });
@@ -22,12 +25,17 @@ function processFilesMap(filesMap, directory) {
         const keyDirectory = newDirectory + `\\${key}`
         try {
             fs.mkdirSync(keyDirectory)
-            arr.forEach(function (pathOfFile) {
-                const fileName = path.basename(pathOfFile);
+            arr.forEach(function ({ fullPath, fileName, fileSize }) {
                 const destinationPath = `${keyDirectory}\\${fileName}`;
                 try {
-                    if (!fs.existsSync(destinationPath))
-                        fs.copyFileSync(pathOfFile, destinationPath);
+                    if (!fs.existsSync(destinationPath)){
+                        fs.copyFileSync(fullPath, destinationPath);
+                        if (resultMap.has(key)) {
+                            resultMap.set(key, [...resultMap.get(key), { destinationPath, fileName, fileSize }]);
+                        } else {
+                            resultMap.set(key, [{ destinationPath, fileName, fileSize }]);
+                        }
+                    }
                 } catch (error) {
                     console.log(error)
                 }
@@ -37,6 +45,7 @@ function processFilesMap(filesMap, directory) {
             console.log(error)
         }
     });
+    return resultMap;
 }
 
 
@@ -61,11 +70,14 @@ function getAllFiles(dirPath, filesMap, recursiveFlag, extensionsArray) {
                 }
             }
         } else {
+            let fileName=path.basename(fullPath).split(".")[0];
+            const stats = fs.statSync(fullPath);
+            const fileSize = stats["size"] / (1024)
             if (extensionsArray.includes(extension)) {
                 if (filesMap.has(extension)) {
-                    filesMap.set(extension, [...filesMap.get(extension), fullPath]);
+                    filesMap.set(extension, [...filesMap.get(extension), {fullPath,fileName,fileSize}]);
                 } else {
-                    filesMap.set(extension, [fullPath]);
+                    filesMap.set(extension, [{fullPath,fileName,fileSize}]);
                 }
             }
 
