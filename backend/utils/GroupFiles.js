@@ -26,7 +26,8 @@ function processFilesMap(filesMap, directory) {
         try {
             fs.mkdirSync(keyDirectory)
             arr.forEach(function ({ fullPath, fileName, fileSize }) {
-                const destinationPath = `${keyDirectory}\\${fileName}`;
+                const extension = path.extname(fullPath);
+                const destinationPath = path.join(keyDirectory, `${fileName}${extension}`);
                 try {
                     if (!fs.existsSync(destinationPath)){
                         fs.copyFileSync(fullPath, destinationPath);
