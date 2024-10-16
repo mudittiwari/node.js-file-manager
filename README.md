@@ -2,7 +2,7 @@
 
 The **File Manager Web Application** is a versatile tool for organizing, searching, and managing files within a specified directory. It allows grouping files, advanced searching, and deleting files based on various criteria. Built using the MERN (MongoDB, Express, React, Node.js) stack, this application simplifies file management.
 
-![File Manager](./data/banner.png)
+![File Manager](https://github.com/mudittiwari/node.js-file-manager/blob/master/data/banner.png)
 
 ## Features
 

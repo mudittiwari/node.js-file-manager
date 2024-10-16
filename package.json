@@ -1,6 +1,6 @@
 {
   "name": "@mudittiwari13/node.js-file-manager",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "type": "module",
   "bin": {
     "install": "bin/index.js"
