@@ -4,6 +4,13 @@ The **File Manager Web Application** is a versatile tool for organizing, searchi
 
 ![File Manager](./data/banner.png)
 
+## Installation
+
+To install the application, run the following command:
+
+```bash
+npx @mudittiwari13/node.js-file-manager install
+```
 ## Features
 
 - **Group Files by Type**: Organize files based on their extensions (e.g., PDF, MP3, JPEG).
