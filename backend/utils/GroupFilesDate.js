@@ -4,7 +4,6 @@ const path = require('path');
 
 
 const groupFilesDate = (directory, recursiveFlag, extensionsArray) => {
-    console.log(directory, recursiveFlag, extensionsArray);
     const filesMap = getAllFiles(directory, new Map(), recursiveFlag, extensionsArray);
     const resultMap = processFilesMap(filesMap, directory);
     return resultMap;

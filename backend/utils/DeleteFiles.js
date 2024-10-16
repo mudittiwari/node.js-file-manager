@@ -7,7 +7,6 @@ const path = require('path');
 const deleteFiles = (directory, recursiveFlag, extensionsArray, days, size) => {
     let daysNumber = Number(days);
     let sizeNumber = Number(size);
-    console.log(daysNumber,sizeNumber);
     const filesMap = getAllFiles(directory, new Map(), recursiveFlag, extensionsArray);
     const resultMap=deleteFilesLoop(filesMap, daysNumber, sizeNumber);
     return resultMap;
@@ -27,7 +26,6 @@ function deleteFilesLoop(filesMap, days, size) {
             if (filterOlderDate(days, stats["atime"]) && fileSize > size) {
                 try {
                     fs.unlinkSync(fullPath);
-                    console.log(`${fullPath} deleted successfully`);
                     if (resultMap.has(key)) {
                         resultMap.set(key, [...resultMap.get(key), {fullPath,fileName,fileSize}]);
                     } else {
