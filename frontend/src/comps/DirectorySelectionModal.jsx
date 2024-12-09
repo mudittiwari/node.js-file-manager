@@ -15,7 +15,7 @@ const DirectorySelectionModal = ({ setCurrentVisibility, setSelectedDirectory })
             let response;
             if (currentDirectory === "") {
                 response = await makeRequest(
-                    "https://be0a-103-176-170-30.ngrok-free.app/api/directories",
+                    "process.env.REACT_APP_BACKEND_API_URL/api/directories",
                     { "ngrok-skip-browser-warning": "true" },
                     "GET",
                     {},
@@ -23,7 +23,7 @@ const DirectorySelectionModal = ({ setCurrentVisibility, setSelectedDirectory })
                 );
             } else {
                 response = await makeRequest(
-                    "https://be0a-103-176-170-30.ngrok-free.app/api/directoriesInside",
+                    "process.env.REACT_APP_BACKEND_API_URL/api/directoriesInside",
                     { "ngrok-skip-browser-warning": "true" },
                     "POST",
                     { "path": currentDirectory },

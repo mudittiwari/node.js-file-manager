@@ -5,7 +5,6 @@ const basicOperationsRouter = require("./routes/BasicOperations");
 const loginRouter = require("./routes/LoginRouter");
 require('dotenv').config();
 
-
 const app = express();
 app.use(cors({ origin: '*' })); 
 app.use(express.urlencoded({extended: false}));

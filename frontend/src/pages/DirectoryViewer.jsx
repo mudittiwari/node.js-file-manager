@@ -27,7 +27,7 @@ const DirectoryViewer = () => {
     setLoading(true);
     try {
       let response = await makeRequest(
-        "https://be0a-103-176-170-30.ngrok-free.app/api/renameFile",
+        `${process.env.REACT_APP_BACKEND_API_URL}/api/renameFile`,
         {},
         "POST",
         {
@@ -59,7 +59,7 @@ const DirectoryViewer = () => {
     setLoading(true);
     try {
       let response = await makeRequest(
-        "https://be0a-103-176-170-30.ngrok-free.app/api/copyOrCutFile",
+        `${process.env.REACT_APP_BACKEND_API_URL}/api/copyOrCutFile`,
         {},
         "POST",
         {
@@ -115,7 +115,7 @@ const DirectoryViewer = () => {
       let response;
       if (directoryPath === "/" || !directoryPath) {
         response = await makeRequest(
-          "https://be0a-103-176-170-30.ngrok-free.app/api",
+          `${process.env.REACT_APP_BACKEND_API_URL}/api`,
           { "ngrok-skip-browser-warning": "true" },
           "GET",
           {},
@@ -123,7 +123,7 @@ const DirectoryViewer = () => {
         );
       } else {
         response = await makeRequest(
-          "https://be0a-103-176-170-30.ngrok-free.app/api/subdirectory",
+          `${process.env.REACT_APP_BACKEND_API_URL}/api/subdirectory`,
           { "ngrok-skip-browser-warning": "true" },
           "POST",
           { "path": directoryPath },
@@ -146,7 +146,7 @@ const DirectoryViewer = () => {
     setLoading(true);
     try {
       let response = await makeRequest(
-        "https://be0a-103-176-170-30.ngrok-free.app/api/deleteFile",
+        `${process.env.REACT_APP_BACKEND_API_URL}/api/deleteFile`,
         {},
         "POST",
         { "path": path },
@@ -172,7 +172,7 @@ const DirectoryViewer = () => {
         throw new Error("File path is required.");
       }
       let response = await makeRequest(
-        "https://be0a-103-176-170-30.ngrok-free.app/api/downloadFile",
+        `${process.env.REACT_APP_BACKEND_API_URL}/api/downloadFile`,
         { "ngrok-skip-browser-warning": "true" },
         "GET",
         {},

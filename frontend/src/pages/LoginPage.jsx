@@ -19,7 +19,7 @@ const LoginPage = () => {
         setLoading(true);
         try {
             let response = await makeRequest(
-                "https://be0a-103-176-170-30.ngrok-free.app/api/login",
+                `${process.env.REACT_APP_BACKEND_API_URL}/api/login`,
                 {},
                 "POST",
                 {
@@ -28,6 +28,7 @@ const LoginPage = () => {
                 },
                 {}
             );
+            console.log(response)
             if (response.status === 200) {
                 localStorage.setItem("fileManagerJwtToken", response.data.token);
                 navigate("/");
