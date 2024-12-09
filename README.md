@@ -11,6 +11,40 @@ To install the application, run the following command:
 ```bash
 npx @mudittiwari13/node.js-file-manager install
 ```
+
+## Steps to Run
+- Install ngrok for your operating system.
+- Sign Up on the ngrok official website to get the auth token.
+- Paste the below command in your after launching ngrok.
+```bash
+ngrok config add-authtoken <auth_token>
+```
+- Run the command
+```bash
+ngrok config edit
+```
+- paste the below configuration below the agent config and save the file.
+```bash
+tunnels:
+  backend:
+    proto: http
+    addr: 8080
+  frontend:
+    proto: http
+    addr: 3000
+```
+- Now Run the below command to run both services.
+```bash
+ngrok start -all
+```
+- Now add the backend service url in the .env file of frontend.
+- Run the below commands in your project directory to run both services.
+```bash
+cd frontend
+npm start
+cd backend
+npm start
+```
 ## 🔥 Key Features
 
 ### File Operations Simplified
