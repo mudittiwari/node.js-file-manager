@@ -1,61 +1,28 @@
 const express = require("express");
 const cors = require("cors")
+const advancedOperationsRouter = require("./routes/AdvancedOperations");
+const basicOperationsRouter = require("./routes/BasicOperations");
+const loginRouter = require("./routes/LoginRouter");
+require('dotenv').config();
+
+
 const app = express();
-const {checkValidDirectory}=require("./utils/CommonUtils")
-const {groupFiles}=require("./utils/GroupFiles");
-const {groupFilesDate} = require("./utils/GroupFilesDate");
-const {deleteFiles} = require("./utils/DeleteFiles");
-const {SearchFiles} = require("./utils/SearchFiles");
-app.use(cors())
+app.use(cors({ origin: '*' })); 
 app.use(express.urlencoded({extended: false}));
 app.use(express.json())
 
-app.get("/", (req, res) => {
 
-});
-
-app.post("/groupFiles", async(req, res) => {
-  if(checkValidDirectory(req.body.directory)){
-    const resultMap=groupFiles(req.body.directory,req.body.isRecursive,req.body.selectedExtensionsService);
-    return res.status(200).json({"message":"files grouped successfully","resultMap":[...resultMap]})
-  }
-  return res.status(400).json({"error":"invalid directory path given"});
-});
+const PORT = 8080;
+const HOST = '0.0.0.0';
 
 
-function sleep(millis) {
-  return new Promise(resolve => setTimeout(resolve, millis));
-}
+app.use("/api/advancedOperations",advancedOperationsRouter);
 
-app.post("/groupFilesDates", (req, res) => {
+app.use("/api",basicOperationsRouter);
 
-  if(checkValidDirectory(req.body.directory)){
-    const resultMap=groupFilesDate(req.body.directory,req.body.isRecursive,req.body.selectedExtensionsService);
-    return res.status(200).json({"message":"files grouped successfully","resultMap":[...resultMap]})
-  }
-  return res.status(400).json({"error":"invalid directory path given"});
-});
+app.use("/api/login", loginRouter);
 
 
-app.post("/deleteFiles", (req, res) => {
-
-  if(checkValidDirectory(req.body.directory)){
-    const resultMap=deleteFiles(req.body.directory,req.body.isRecursive,req.body.selectedExtensionsService,req.body.timeLimit,req.body.mininumSize);
-    return res.status(200).json({"message":"files deleted successfully","resultMap":[...resultMap]})
-  }
-  return res.status(400).json({"error":"invalid directory path given"});
-});
-
-app.post("/searchFiles",(req,res)=>{
-  if(checkValidDirectory(req.body.directory)){
-    const resultMap=SearchFiles(req.body.directory,req.body.isRecursive,req.body.fileNames,req.body.selectedExtensionsService,req.body.dateRange,req.body.sizeRange)
-    return res.status(200).json({"message":"files search successful","resultMap":[...resultMap]});
-  }
-  else{
-    return res.status(400).json({"error":"invalid directory path given"});
-  }
-});
-
-app.listen(5000, () => {
-  console.log("app running on port 5000");
+app.listen(PORT, HOST, () => {
+  console.log(`Server running at http://${HOST}:${PORT}`);
 });

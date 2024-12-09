@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-async function makeRequest(url, headers = {}, method = 'GET', data = null, queryParams = {}) {
+async function makeRequest(url, headers = {}, method = 'GET', data = null, queryParams = {}, responseType = null) {
     try {
         const options = {
             method: method.toUpperCase(),
@@ -14,6 +14,8 @@ async function makeRequest(url, headers = {}, method = 'GET', data = null, query
         if (['POST', 'PUT', 'PATCH'].includes(method.toUpperCase()) && data) {
             options.data = data;
         }
+        if(responseType)
+            options.responseType = responseType
         const response = await axios(options);
         return response;
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Navbar from "../comps/Navbar";
 import { NavbarState } from "../utils/Constants";
 import { makeRequest, notifyError, notifySuccess, compareArrays, removeItemFromArray } from "../utils/Utils";
@@ -6,9 +6,11 @@ import { Toaster } from "react-hot-toast";
 import ResultModal from "../comps/ResultModal";
 import LoadingBar from "../Loadingbar";
 import { useEffect } from "react";
-const Home = () => {
-  const [navbarState, setNavbarState] = useState("deleteFiles");
-  const [directory, setDirectory] = useState("");
+import DirectorySelectionModal from "../comps/DirectorySelectionModal";
+import { useNavigate } from "react-router-dom";
+import navbarContext from "../context/NavbarContext";
+const AdvancedOperations = () => {
+  const {navbarState, setNavbarState} = useContext(navbarContext);
   const [isRecursive, setIsRecursive] = useState(false);
   const [timeLimit, setTimeLimit] = useState("");
   const [minSize, setMinSize] = useState("");
@@ -18,11 +20,17 @@ const Home = () => {
   const [sizeRange, setSizeRange] = useState({ minSize: "", maxSize: "" });
   const [loading, setLoading] = useState(false)
   const [fileTypeSize, setFileTypeSize] = useState("KB")
-  const [previousScreen,setPreviousScreen]=useState("")
-
+  const [previousScreen, setPreviousScreen] = useState("")
+  const [directorySelectionVisibility, setDirectorySelectionVisibility] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    setDirectory("")
+    const token = localStorage.getItem("fileManagerJwtToken");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+    setSelectedDirectory("")
     setIsRecursive(false)
     setTimeLimit("")
     setMinSize("")
@@ -48,6 +56,7 @@ const Home = () => {
   ];
   const [currentlyVisible, setCurrentVisibility] = useState(false);
   const [modalData, setModalData] = useState(null)
+  const [selectedDirectory, setSelectedDirectory] = useState("");
 
 
 
@@ -61,7 +70,7 @@ const Home = () => {
     e.preventDefault();
 
     if (navbarState === NavbarState.GROUP_FILES) {
-      if (directory.length == 0) {
+      if (selectedDirectory.length == 0) {
         notifyError("Please enter directory");
         return;
       }
@@ -70,9 +79,9 @@ const Home = () => {
         return;
       }
       setLoading(true);
-      let selectedExtensionsService=removeItemFromArray(selectedExtensions,"All");
-      let response = await makeRequest("http://localhost:5000/groupFiles", {}, "POST", {
-        directory,
+      let selectedExtensionsService = removeItemFromArray(selectedExtensions, "All");
+      let response = await makeRequest("http://localhost:8080/api/advancedOperations/groupFiles", {}, "POST", {
+        selectedDirectory,
         isRecursive,
         selectedExtensionsService,
       }, {});
@@ -95,7 +104,7 @@ const Home = () => {
 
 
     else if (navbarState === NavbarState.GROUP_FILES_DATES) {
-      if (directory.length == 0) {
+      if (selectedDirectory.length == 0) {
         notifyError("Please enter directory");
         return;
       }
@@ -104,9 +113,9 @@ const Home = () => {
         return;
       }
       setLoading(true);
-      let selectedExtensionsService=removeItemFromArray(selectedExtensions,"All");
-      let response = await makeRequest("http://localhost:5000/groupFilesDates", {}, "POST", {
-        directory,
+      let selectedExtensionsService = removeItemFromArray(selectedExtensions, "All");
+      let response = await makeRequest("http://localhost:8080/api/advancedOperations/groupFilesDates", {}, "POST", {
+        selectedDirectory,
         isRecursive,
         selectedExtensionsService,
       }, {});
@@ -127,7 +136,7 @@ const Home = () => {
       }
     }
     else if (navbarState === NavbarState.DELETE_FILES) {
-      if (directory.length == 0) {
+      if (selectedDirectory.length == 0) {
         notifyError("Please enter directory");
         return;
       }
@@ -147,9 +156,9 @@ const Home = () => {
         size = 1024 * 1024 * size;
         mininumSize = size;
       }
-      let selectedExtensionsService=removeItemFromArray(selectedExtensions,"All");
-      let response = await makeRequest("http://localhost:5000/deleteFiles", {}, "POST", {
-        directory,
+      let selectedExtensionsService = removeItemFromArray(selectedExtensions, "All");
+      let response = await makeRequest("http://localhost:8080/api/advancedOperations/deleteFiles", {}, "POST", {
+        selectedDirectory,
         isRecursive,
         selectedExtensionsService,
         timeLimit,
@@ -172,7 +181,7 @@ const Home = () => {
       }
     }
     else if (navbarState === NavbarState.ADVANCED_SEARCH) {
-      if (directory.length == 0) {
+      if (selectedDirectory.length == 0) {
         notifyError("Please enter directory");
         return;
       }
@@ -200,9 +209,9 @@ const Home = () => {
         size = 1024 * 1024 * size;
         maximumSize = size;
       }
-      let selectedExtensionsService=removeItemFromArray(selectedExtensions,"All");
-      let response = await makeRequest("http://localhost:5000/searchFiles", {}, "POST", {
-        directory,
+      let selectedExtensionsService = removeItemFromArray(selectedExtensions, "All");
+      let response = await makeRequest("http://localhost:8080/api/advancedOperations/searchFiles", {}, "POST", {
+        selectedDirectory,
         isRecursive,
         fileNames: fileNames.split(",").map(name => name.trim()),
         selectedExtensionsService,
@@ -233,7 +242,7 @@ const Home = () => {
   const handleExtensionChange = (e) => {
     const value = e.target.value;
     if (value == "All") {
-      if (compareArrays(selectedExtensions,extensions)) {
+      if (compareArrays(selectedExtensions, extensions)) {
         setSelectedExtensions([]);
       }
       else {
@@ -256,21 +265,31 @@ const Home = () => {
       {
         currentlyVisible && <ResultModal setCurrentVisibility={setCurrentVisibility} modalData={modalData} previousScreen={previousScreen} fileType={fileTypeSize} />
       }
+      {
+        directorySelectionVisibility && <DirectorySelectionModal setCurrentVisibility={setDirectorySelectionVisibility} setSelectedDirectory={setSelectedDirectory} />
+      }
       <Navbar changeNavbarState={setNavbarState} navbarState={navbarState} />
       <form
         onSubmit={handleSubmit}
         className="max-w-3xl mt-5 mx-auto p-6 bg-white shadow-lg rounded-lg space-y-6"
       >
         {/* Directory Input */}
-        <div>
-          <label className="block text-gray-700 font-bold mb-2">Directory</label>
+        <div className="mb-4 flex">
           <input
             type="text"
-            value={directory}
-            onChange={(e) => setDirectory(e.target.value)}
-            placeholder="Enter the directory"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            value={selectedDirectory || "No directory selected"}
+            disabled
+            className="border border-gray-300 p-2 rounded w-full bg-gray-100 cursor-not-allowed"
           />
+          <button
+            className="w-32 px-4 ml-2 py-2 bg-gray-800 text-white font-bold rounded-md hover:bg-gray-600"
+            onClick={(e) =>{ 
+              e.preventDefault();
+              setDirectorySelectionVisibility(true)
+            }}
+          >
+            Select
+          </button>
         </div>
 
         {/* Recursive Flag */}
@@ -368,7 +387,7 @@ const Home = () => {
                 type="date"
                 value={dateRange.startDate}
                 onChange={(e) =>
-                  setDateRange({ startDate: e.target.value, endDate:"" })
+                  setDateRange({ startDate: e.target.value, endDate: "" })
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
               />
@@ -450,10 +469,6 @@ const Home = () => {
   );
 };
 
-export default Home;
-
-
-
 const Dropdown = ({ setFileTypeSize, fileTypeSize }) => {
   return (
     <>
@@ -467,3 +482,8 @@ const Dropdown = ({ setFileTypeSize, fileTypeSize }) => {
     </>
   );
 }
+
+export default AdvancedOperations;
+
+
+
