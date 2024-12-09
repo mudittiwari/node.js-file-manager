@@ -1,5 +1,6 @@
 {
   "name": "@mudittiwari13/node.js-file-manager",
+  "homepage": "https://github.com/mudittiwari/node.js-file-manager#readme",
   "version": "1.3.3",
   "type": "module",
   "bin": {
