@@ -15,7 +15,7 @@ const DirectorySelectionModal = ({ setCurrentVisibility, setSelectedDirectory })
             let response;
             if (currentDirectory === "") {
                 response = await makeRequest(
-                    "process.env.REACT_APP_BACKEND_API_URL/api/directories",
+                    `${process.env.REACT_APP_BACKEND_API_URL}/api/directories`,
                     { "ngrok-skip-browser-warning": "true" },
                     "GET",
                     {},

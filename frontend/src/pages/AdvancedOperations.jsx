@@ -30,6 +30,10 @@ const AdvancedOperations = () => {
       navigate("/login");
       return;
     }
+    if(navbarState===NavbarState.HOME){
+      navigate("/");
+      return;
+    }
     setSelectedDirectory("")
     setIsRecursive(false)
     setTimeLimit("")
@@ -80,7 +84,7 @@ const AdvancedOperations = () => {
       }
       setLoading(true);
       let selectedExtensionsService = removeItemFromArray(selectedExtensions, "All");
-      let response = await makeRequest("http://localhost:8080/api/advancedOperations/groupFiles", {}, "POST", {
+      let response = await makeRequest(`${process.env.REACT_APP_BACKEND_API_URL}/api/advancedOperations/groupFiles`, {}, "POST", {
         selectedDirectory,
         isRecursive,
         selectedExtensionsService,
@@ -114,7 +118,7 @@ const AdvancedOperations = () => {
       }
       setLoading(true);
       let selectedExtensionsService = removeItemFromArray(selectedExtensions, "All");
-      let response = await makeRequest("http://localhost:8080/api/advancedOperations/groupFilesDates", {}, "POST", {
+      let response = await makeRequest(`${process.env.REACT_APP_BACKEND_API_URL}"http://localhost:8080/api/advancedOperations/groupFilesDates`, {}, "POST", {
         selectedDirectory,
         isRecursive,
         selectedExtensionsService,
@@ -157,7 +161,7 @@ const AdvancedOperations = () => {
         mininumSize = size;
       }
       let selectedExtensionsService = removeItemFromArray(selectedExtensions, "All");
-      let response = await makeRequest("http://localhost:8080/api/advancedOperations/deleteFiles", {}, "POST", {
+      let response = await makeRequest(`${process.env.REACT_APP_BACKEND_API_URL}/advancedOperations/deleteFiles`, {}, "POST", {
         selectedDirectory,
         isRecursive,
         selectedExtensionsService,
@@ -210,7 +214,7 @@ const AdvancedOperations = () => {
         maximumSize = size;
       }
       let selectedExtensionsService = removeItemFromArray(selectedExtensions, "All");
-      let response = await makeRequest("http://localhost:8080/api/advancedOperations/searchFiles", {}, "POST", {
+      let response = await makeRequest(`${process.env.REACT_APP_BACKEND_API_URL}/api/advancedOperations/searchFiles`, {}, "POST", {
         selectedDirectory,
         isRecursive,
         fileNames: fileNames.split(",").map(name => name.trim()),
