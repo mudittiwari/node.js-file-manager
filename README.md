@@ -37,7 +37,7 @@ tunnels:
 ```bash
 ngrok start -all
 ```
-- Now add the backend service url in the .env file of frontend.
+- #### Now add the backend service url in the .env file of frontend.
 - Run the below commands in your project directory to run both services.
 ```bash
 cd frontend
@@ -45,6 +45,7 @@ npm start
 cd backend
 npm start
 ```
+- #### default username and password is admin. You can change it in the .env file of backend.
 ## 🔥 Key Features
 
 ### File Operations Simplified
